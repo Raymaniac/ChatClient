@@ -1,0 +1,147 @@
+package ChatPack;
+
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.HeadlessException;
+import java.awt.event.*;
+import java.util.ArrayList;
+
+import java.awt.Dimension;
+import java.awt.LayoutManager;
+
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+
+import javax.swing.*;
+
+public class GUI extends JFrame implements ActionListener, KeyListener {
+
+	private JTextField userText = new JTextField("TestUser");
+	private JButton send = new JButton("ENTER");
+	private JPanel textPanel = new JPanel();;
+	private JScrollPane scrollPane = new JScrollPane(textPanel);
+
+	private String userName = "anonymoPLBB";
+
+	//private Backend clientBackend = new Backend();
+
+	public GUI() {
+		super();
+		// TODO Auto-generated constructor stub
+		setDefaults();
+		addDefaultKomponents();
+
+		this.setVisible(true);
+	}
+
+	private void addDefaultKomponents() {
+		this.setName("TextChat");
+
+		this.add(userText);
+		this.userText.setBounds(10, 400, 250, 50);
+		this.userText.setText("");
+		this.send.setBounds(250, 400, 100, 50);
+
+		textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.Y_AXIS));
+		textPanel.add(new JLabel("Enter User Name"));
+
+		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		scrollPane.setBounds(2, 2, 390, 400);
+		JPanel contentPane = new JPanel(null);
+		contentPane.setPreferredSize(new Dimension(500, 400));
+
+		this.add(scrollPane);
+		this.add(send);
+		send.addActionListener(this);
+		
+		
+
+	}
+
+	
+	
+	private void setDefaults() {
+		this.setBackground(Color.BLACK);
+		//this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent e) {
+            	clientBackend.logout(this.userName);
+                System.exit(0);
+            }
+        });
+		this.setBounds(200, 200, 400, 500);
+		this.setLayout(null);
+		this.setResizable(false);
+
+	}
+	
+	
+
+	public String getUserText() {
+		return this.userText.getText();
+	}
+
+	public void resetUserText() {
+		this.userText.setText(null);
+	}
+	
+	
+	
+
+	public void showMessage(List<Message> input) {
+		for (int i = 0; i < input.size(); i++) {
+			textPanel.add(
+					new JLabel(input.messages.getIndex(i).sender + " : " + input.messages.getIndex(i).messagetext));
+		}
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+
+		if (e.getSource() == send) {
+			if (!this.userName.equals("anonymoPLBB")) {
+
+				textPanel.add(new JLabel(this.userName + " : " + getUserText()));
+				Message msg = new Message();
+				msg.sender = this.userName;
+				msg.messageText = getUserText();
+				clientBackend.sendMessage(msg);
+				resetUserText();
+				scrollPane.updateUI();
+
+			} else {
+				this.userName = getUserText();
+				clientBackend.login(this.userName);
+				textPanel.add(new JLabel("Hello " + this.userName));
+				scrollPane.updateUI();
+				resetUserText();
+			}
+		}
+
+	}
+
+	@Override
+	public void keyPressed(KeyEvent arg0) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void keyReleased(KeyEvent arg0) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void keyTyped(KeyEvent arg0) {
+		// TODO Auto-generated method stub
+
+	}
+
+}
